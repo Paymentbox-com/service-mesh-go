@@ -4,7 +4,11 @@ The Go contract for the
 [Service Mesh API Specification](https://github.com/Paymentbox-com/service-mesh-api).
 It is one package, `mesh`, with no dependencies, imported as
 `github.com/Paymentbox-com/service-mesh-go/mesh`. Transports and protocol
-layers build against it; nothing in it moves bytes.
+layers build against it; nothing in it moves bytes. The
+[gRPC Service Mesh API](https://github.com/Paymentbox-com/grpc-service-mesh-api)
+is the protocol layer that generates code against this contract from protobuf
+definitions, through its Go library
+[grpc-service-mesh-go](https://github.com/Paymentbox-com/grpc-service-mesh-go).
 
 The package fixes:
 
