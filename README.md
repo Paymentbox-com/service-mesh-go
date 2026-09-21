@@ -19,7 +19,9 @@ The package fixes:
 ## Transports
 
 A transport is a separate module that implements `mesh.Runtime` and
-`mesh.Client` and exports its own `New` and `NewClient`.
+`mesh.Client` and exports its own `New` and `NewClient`. `NewClient` takes
+the config and the transport's `ServiceMap`, which the client holds and
+returns from `ServiceMap()`.
 
 - NATS: [service-mesh-nats-go](https://github.com/Paymentbox-com/service-mesh-nats-go)
 

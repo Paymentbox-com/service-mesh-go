@@ -131,8 +131,8 @@ const (
 )
 
 // Client is the access point for sending. It is obtained from a Runtime with
-// Client, or built directly with a transport package's NewClient for a
-// process that only calls.
+// Client, or built directly with a transport package's NewClient, which takes
+// a Config and a ServiceMap, for a process that only calls.
 type Client interface {
 	// Request sends msg to a KindRoute target and returns the reply. opts
 	// carries transport-specific options for this call and may be nil. A
