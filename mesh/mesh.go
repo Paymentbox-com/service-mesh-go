@@ -153,7 +153,7 @@ type Runtime interface {
 	// Client returns a client sharing this runtime's connection.
 	Client() Client
 
-	// Start connects, binds every Endpoint and Subscriber, and begins
+	// Start subscribes every Endpoint and Subscriber on the Client's connection and begins
 	// receiving.
 	Start(ctx context.Context) error
 
