@@ -1,49 +1,65 @@
 # service-mesh-go
 
 The Go contract for the
-[Service Mesh API Specification](https://github.com/Paymentbox-com/service-mesh-api).
-It is one package, `mesh`, with no dependencies, imported as
-`github.com/Paymentbox-com/service-mesh-go/mesh`. Transports and protocol
-layers build against it; nothing in it moves bytes. The
-[gRPC Service Mesh API](https://github.com/Paymentbox-com/grpc-service-mesh-api)
-is the protocol layer that generates code against this contract from protobuf
-definitions, through its Go library
-[grpc-service-mesh-go](https://github.com/Paymentbox-com/grpc-service-mesh-go).
+[Service Mesh API Specification](https://github.com/Paymentbox-com/service-mesh-api),
+packaged as the module `github.com/Paymentbox-com/service-mesh-go` with one
+package, `mesh`. It holds what every transport and every caller must agree on,
+and nothing that moves bytes. Transports are separate modules that depend on it
+and implement `Client` and `Runtime`.
 
-The package fixes:
+The [gRPC Service Mesh API](https://github.com/Paymentbox-com/grpc-service-mesh-api) is a protocol layer that generates code against this contract from protobuf
+definitions, through its Go library [grpc-service-mesh-go](https://github.com/Paymentbox-com/grpc-service-mesh-go). Other protocol layers may be implemented
+to do the same.
 
-- the types `Target`, `ServiceMap`, `Message`, `Endpoint`, and `Subscriber`
-- the handler signatures `EndpointHandler` and `SubscriberHandler`
-- the `Client` and `Runtime` interfaces
-- `Config` and the two keys the specification defines, `deployment_group`
-  and `consumer_group`, with `ConsumerGroupNone`
-- the three errors `ErrKindMismatch`, `ErrInvalidTarget`, and
-  `ErrNoDeploymentGroup`
+## Install
+
+```sh
+go get github.com/Paymentbox-com/service-mesh-go
+```
+
+```go
+import "github.com/Paymentbox-com/service-mesh-go/mesh"
+```
+
+Requires Go 1.26 or newer. The module has no dependencies.
+
+## What it Implements
+
+- The value types from the specification: `mesh.Target`, `mesh.ServiceMap`,
+  `mesh.Message`, `mesh.Endpoint` and `mesh.Subscriber`.
+- Target Kinds are implemented as `mesh.KindRoute` and `mesh.KindTopic`.
+- `Message.Payload` is a `[]byte`; `nil` and an empty slice are both an empty payload.
+- `Target.Equal` compares segments and kind and ignores metadata.
+- The handler signatures `mesh.EndpointHandler` and `mesh.SubscriberHandler`.
+- `mesh.Config` and the configuration keys the specification defines: `mesh.DeploymentGroupKey`,
+  `mesh.ConsumerGroupKey`, and the value `mesh.ConsumerGroupNone`.
+- The errors defined by the specification: `mesh.ErrKindMismatch`,
+  `mesh.ErrInvalidTarget`, `mesh.ErrNoDeploymentGroup`.
+- The `mesh.Client` and `mesh.Runtime` interfaces.
+
+`Client` and `Runtime` are interfaces. The specification names their methods;
+a transport satisfies the contract by implementing them.
 
 ## Transports
 
-A transport is a separate module that implements `mesh.Runtime` and
-`mesh.Client` and exports its own `New` and `NewClient`. `NewClient` takes
-the config and the transport's `ServiceMap`, which the client holds and
-returns from `ServiceMap()`.
+- NATS: [service-mesh-nats-go](https://github.com/Paymentbox-com/service-mesh-nats-go),
+  package `nats`.
 
-- NATS: [service-mesh-nats-go](https://github.com/Paymentbox-com/service-mesh-nats-go)
+The Ruby counterpart of this module is
+[service-mesh-ruby](https://github.com/Paymentbox-com/service-mesh-ruby).
 
 ## Usage
 
-Code written against this package works with any transport. A function that
-takes a `mesh.Client` and a `mesh.Target` does not know or care which one it
-was handed.
+A transport that implements `Client` and `Runtime` according to the specification uses the
+types defined here.
 
 ```go
 import "github.com/Paymentbox-com/service-mesh-go/mesh"
 
-func lookup(ctx context.Context, c mesh.Client, target mesh.Target, id string) ([]byte, error) {
-    reply, err := c.Request(ctx, mesh.Message{
-        Target:   target,
-        Metadata: map[string]string{"Request-Id": id},
-        Payload:  []byte(id),
-    }, nil)
+var target = mesh.Target{Segments: []string{"accounts", "lookup"}, Kind: mesh.KindRoute}
+
+func lookup(ctx context.Context, c mesh.Client, id string) ([]byte, error) {
+    reply, err := c.Request(ctx, mesh.Message{Target: target, Payload: []byte(id)}, nil)
     if err != nil {
         return nil, err
     }
@@ -51,17 +67,15 @@ func lookup(ctx context.Context, c mesh.Client, target mesh.Target, id string) (
 }
 ```
 
-The caller constructs a runtime from whichever transport module it uses and
-passes `rt.Client()`.
-
 ## Development
 
-Tool versions are pinned in `mise.toml`; `mise install` installs them. `just`
-lists the recipes. `just check` runs the same format, vet, test,
-vulnerability, and lint steps as CI.
+```
+mise install
+just check      # format, vet, test, vulnerability scan, lint
+```
 
 ## Tests
 
 ```
-go test -race ./...
+just test
 ```
