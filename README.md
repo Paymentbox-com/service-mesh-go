@@ -1,9 +1,9 @@
 # service-mesh-go
 
-The Go contract for the
-[Service Mesh API Specification](https://github.com/Paymentbox-com/service-mesh-api),
-packaged as the module `github.com/Paymentbox-com/service-mesh-go` with one
-package, `mesh`. It holds what every transport and every caller must agree on,
+service-mesh-go is the Go contract for the
+[Service Mesh API Specification](https://github.com/Paymentbox-com/service-mesh-api).
+It is the module `github.com/Paymentbox-com/service-mesh-go`, with one package,
+`mesh`. It holds what every transport and every caller must agree on,
 and nothing that moves bytes. Transports are separate modules that depend on it
 and implement `Client` and `Runtime`.
 
@@ -60,15 +60,10 @@ func lookup(ctx context.Context, c mesh.Client, id string) ([]byte, error) {
 ```
 mise install
 just check      # format, vet, test, vulnerability scan, lint
+just test       # tests only
 ```
 
 A release is a tag. `just bump patch`, `just bump minor`, or `just bump major`
 raises the version in `VERSION` and commits that file. After the commit is
 pushed and passes CI, `just release` tags the commit with it, pushes the tag,
 and has the Go module proxy fetch it.
-
-## Tests
-
-```
-just test
-```
