@@ -63,8 +63,8 @@ just check      # format, vet, test, vulnerability scan, lint
 ```
 
 A release is a tag. `just bump patch`, `just bump minor`, or `just bump major`
-raises the version in `VERSION`. After that change is committed, pushed, and
-passes CI, `just release` tags the commit with it, pushes the tag, and has the
+raises the version in `VERSION` and commits that file. After the commit is
+pushed and passes CI, `just release` tags the commit with it, pushes the tag, and has the
 Go module proxy fetch it.
 
 ## Tests
