@@ -130,9 +130,10 @@ const (
 	ConsumerGroupNone = "none"
 )
 
-// Client is the access point for sending. It is obtained from a Runtime with
-// Client, or built directly with a transport package's NewClient, which takes
-// a Config and a ServiceMap, for a process that only calls.
+// Client is the access point for sending. The application builds it with a
+// transport package's NewClient, which takes a Config and a ServiceMap. A
+// Runtime is built from a Client, and a process that only calls uses a Client
+// on its own.
 type Client interface {
 	// Request sends msg to a KindRoute target and returns the reply. opts
 	// carries transport-specific options for this call and may be nil. A
@@ -150,7 +151,7 @@ type Client interface {
 
 // Runtime is the service process for handling requests.
 type Runtime interface {
-	// Client returns a client sharing this runtime's connection.
+	// Client returns the Client the runtime was built from.
 	Client() Client
 
 	// Start subscribes every Endpoint and Subscriber on the Client's connection and begins
