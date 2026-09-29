@@ -7,10 +7,6 @@ package, `mesh`. It holds what every transport and every caller must agree on,
 and nothing that moves bytes. Transports are separate modules that depend on it
 and implement `Client` and `Runtime`.
 
-The [gRPC Service Mesh API](https://github.com/Paymentbox-com/grpc-service-mesh-api) is a protocol layer that generates code against this contract from protobuf
-definitions, through its Go library [grpc-service-mesh-go](https://github.com/Paymentbox-com/grpc-service-mesh-go). Other protocol layers may be implemented
-to do the same.
-
 ## Install
 
 ```sh
@@ -39,14 +35,6 @@ Requires Go 1.26 or newer. The module has no dependencies.
 
 `Client` and `Runtime` are interfaces. The specification names their methods;
 a transport satisfies the contract by implementing them.
-
-## Transports
-
-- NATS: [service-mesh-nats-go](https://github.com/Paymentbox-com/service-mesh-nats-go),
-  package `nats`.
-
-The Ruby counterpart of this module is
-[service-mesh-ruby](https://github.com/Paymentbox-com/service-mesh-ruby).
 
 ## Usage
 
