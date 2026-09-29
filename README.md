@@ -22,19 +22,19 @@ Requires Go 1.26 or newer. The module has no dependencies.
 ## What it Implements
 
 - The value types from the specification: `mesh.Target`, `mesh.ServiceMap`,
-  `mesh.Message`, `mesh.Endpoint` and `mesh.Subscriber`.
+  `mesh.Message`, `mesh.Endpoint`, and `mesh.Subscriber`.
 - Target Kinds are implemented as `mesh.KindRoute` and `mesh.KindTopic`.
-- `Message.Payload` is a `[]byte`; `nil` and an empty slice are both an empty payload.
+- `Message.Payload` is a `[]byte`. `nil` and an empty slice are both an empty payload.
 - `Target.Equal` compares segments and kind and ignores metadata.
 - The handler signatures `mesh.EndpointHandler` and `mesh.SubscriberHandler`.
 - `mesh.Config` and the configuration keys the specification defines: `mesh.DeploymentGroupKey`,
   `mesh.ConsumerGroupKey`, and the value `mesh.ConsumerGroupNone`.
 - The errors defined by the specification: `mesh.ErrKindMismatch`,
-  `mesh.ErrInvalidTarget`, `mesh.ErrNoDeploymentGroup`.
+  `mesh.ErrInvalidTarget`, and `mesh.ErrNoDeploymentGroup`.
 - The `mesh.Client` and `mesh.Runtime` interfaces.
 
-`Client` and `Runtime` are interfaces. The specification names their methods;
-a transport satisfies the contract by implementing them.
+`Client` and `Runtime` are interfaces. The specification names their methods,
+and a transport satisfies the contract by implementing them.
 
 ## Usage
 
@@ -64,8 +64,8 @@ just check      # format, vet, test, vulnerability scan, lint
 
 A release is a tag. `just bump patch`, `just bump minor`, or `just bump major`
 raises the version in `VERSION` and commits that file. After the commit is
-pushed and passes CI, `just release` tags the commit with it, pushes the tag, and has the
-Go module proxy fetch it.
+pushed and passes CI, `just release` tags the commit with it, pushes the tag,
+and has the Go module proxy fetch it.
 
 ## Tests
 
