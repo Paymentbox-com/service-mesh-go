@@ -27,8 +27,9 @@ Requires Go 1.26 or newer. The module has no dependencies.
 - `Message.Payload` is a `[]byte`. `nil` and an empty slice are both an empty payload.
 - `Target.Equal` compares segments and kind and ignores metadata.
 - The handler signatures `mesh.EndpointHandler` and `mesh.SubscriberHandler`.
-- `mesh.Config` and the configuration keys the specification defines: `mesh.DeploymentGroupKey`,
-  `mesh.ConsumerGroupKey`, and the value `mesh.ConsumerGroupNone`.
+- `mesh.Config` and the configuration keys the specification defines. `mesh.DeploymentGroupKey`
+  is runtime configuration. `mesh.ConsumerGroupKey`, with the value `mesh.ConsumerGroupNone`, is
+  `Endpoint` and `Subscriber` metadata.
 - The errors defined by the specification: `mesh.ErrKindMismatch`,
   `mesh.ErrInvalidTarget`, and `mesh.ErrNoDeploymentGroup`.
 - The `mesh.Client` and `mesh.Runtime` interfaces.

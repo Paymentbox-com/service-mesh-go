@@ -39,10 +39,10 @@ func (k Kind) String() string {
 }
 
 // Target identifies a receiving channel on the mesh. Segments are assembled
-// into a transport-specific address by the runtime; the assembled form never
-// leaves the runtime. Metadata holds transport-specific configuration for
-// this target, such as ConsumerGroupKey or, on the client side where a
-// transport needs it, DeploymentGroupKey.
+// into a transport-specific address by the runtime, and the assembled form
+// never leaves the runtime. A Target is an address that senders and
+// receivers share, so Metadata holds only transport-specific addressing. It
+// never carries DeploymentGroupKey or ConsumerGroupKey.
 type Target struct {
 	Segments []string
 	Kind     Kind
@@ -91,7 +91,7 @@ type EndpointHandler func(context.Context, Message) (Message, error)
 type SubscriberHandler func(context.Context, Message) error
 
 // Endpoint pairs a KindRoute target with a handler that replies. Metadata
-// holds transport-specific settings for the binding.
+// holds transport-specific settings for this endpoint, and ConsumerGroupKey.
 type Endpoint struct {
 	Target   Target
 	Metadata map[string]string
@@ -99,7 +99,8 @@ type Endpoint struct {
 }
 
 // Subscriber pairs a KindTopic target with a handler that does not reply.
-// Metadata holds transport-specific settings for the binding.
+// Metadata holds transport-specific settings for this subscriber, and
+// ConsumerGroupKey.
 type Subscriber struct {
 	Target   Target
 	Metadata map[string]string
@@ -113,17 +114,17 @@ type Config map[string]string
 // Configuration keys the specification defines. Everything else is
 // transport-specific and documented by the transport package.
 const (
-	// DeploymentGroupKey names the logical group a service belongs to. It is
-	// required in the Config given to a Runtime. A transport that needs it on
-	// the client side reads it from Target.Metadata.
+	// DeploymentGroupKey names the logical group a running service belongs
+	// to. It is required in the Config given to a Runtime, and nothing else
+	// carries it. It is the default consumer group of every Endpoint and
+	// Subscriber the Runtime serves.
 	DeploymentGroupKey = "deployment_group"
 
-	// ConsumerGroupKey overrides the logical group an Endpoint or Subscriber
-	// joins. By default both use the deployment group. A transport reads it
-	// from the binding's Metadata or the Target's Metadata, as it documents.
-	// ConsumerGroupNone means no group: every instance handles every message.
-	// Any other value names the group, and one handler in that group handles
-	// each message.
+	// ConsumerGroupKey names the logical group an Endpoint or Subscriber
+	// joins, in its Metadata. When it is unset or empty, the Runtime's
+	// deployment group applies. ConsumerGroupNone means no group, so every
+	// instance handles every message. Any other value names the group, and one
+	// handler in that group handles each message.
 	ConsumerGroupKey = "consumer_group"
 
 	// ConsumerGroupNone is the ConsumerGroupKey value that requests no group.
