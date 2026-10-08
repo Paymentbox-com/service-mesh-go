@@ -1,7 +1,7 @@
 // Package mesh is the Go form of the Service Mesh API Specification. It
 // holds the contract only: the core types, the handler signatures, the
 // Client and Runtime interfaces, the transport-agnostic configuration keys,
-// and three errors. It has no dependencies.
+// the reserved metadata keys, and three errors. It has no dependencies.
 //
 // Transports are separate modules that import this package and implement
 // Runtime and Client. The first is service-mesh-nats-go.
@@ -71,6 +71,9 @@ type ServiceMap struct {
 
 // Message is what travels between services.
 //
+// Metadata keys that start with ReservedPrefix belong to transports and
+// protocol layers, and application code does not set them.
+//
 // Payload is owned by the receiver of the call it is passed to. The runtime
 // does not retain or mutate it after the call. nil and an empty slice are
 // both an empty payload.
@@ -129,6 +132,41 @@ const (
 
 	// ConsumerGroupNone is the ConsumerGroupKey value that requests no group.
 	ConsumerGroupNone = "none"
+)
+
+// Metadata keys the specification reserves and defines. A transport may use
+// any of the defined keys, and one that does follows the meaning and format
+// given here.
+const (
+	// ReservedPrefix starts every metadata key that belongs to a transport or
+	// a protocol layer. A key a transport defines for itself continues with
+	// the transport's name, such as "Mesh-Nats-".
+	ReservedPrefix = "Mesh-"
+
+	// HandlerErrorKey is set by the serving transport on a reply when the
+	// Endpoint's handler failed. The value is the failure's text.
+	HandlerErrorKey = "Mesh-Handler-Error"
+
+	// TimeoutKey is set by the requesting transport on a request. The value
+	// is how long the caller waits for the reply, as a whole number of
+	// milliseconds.
+	TimeoutKey = "Mesh-Timeout"
+
+	// DeadlineKey is set by the receiving transport on a message it hands to
+	// a handler. The value is when the handler's result stops mattering, in
+	// RFC 3339 with fractional seconds.
+	DeadlineKey = "Mesh-Deadline"
+
+	// DeliveryAttemptKey is set by the receiving transport on a message it
+	// hands to a handler. The value is which delivery of the message this
+	// is, starting at 1. It is absent when the transport does not track
+	// deliveries.
+	DeliveryAttemptKey = "Mesh-Delivery-Attempt"
+
+	// MessageIDKey is set by the publisher or caller. The value is an ID that
+	// stays the same when the same message is sent again, so handlers can
+	// recognize repeats.
+	MessageIDKey = "Mesh-Message-Id"
 )
 
 // Client is the access point for sending. The application builds it with a
