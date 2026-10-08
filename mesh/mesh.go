@@ -41,8 +41,14 @@ func (k Kind) String() string {
 // Target identifies a receiving channel on the mesh. Segments are assembled
 // into a transport-specific address by the runtime, and the assembled form
 // never leaves the runtime. A Target is an address that senders and
-// receivers share, so Metadata holds only transport-specific addressing. It
-// never carries DeploymentGroupKey or ConsumerGroupKey.
+// receivers share. Metadata holds transport-specific addressing and the
+// default transport settings for the target. It never carries
+// DeploymentGroupKey or a consumer group.
+//
+// A transport reads each of its settings from the first of these that has a
+// value: the per-call options of Request or Publish, the Endpoint's or
+// Subscriber's Metadata, the Target's Metadata, and the transport's own
+// default.
 type Target struct {
 	Segments []string
 	Kind     Kind
@@ -94,20 +100,30 @@ type EndpointHandler func(context.Context, Message) (Message, error)
 type SubscriberHandler func(context.Context, Message) error
 
 // Endpoint pairs a KindRoute target with a handler that replies. Metadata
-// holds transport-specific settings for this endpoint, and ConsumerGroupKey.
+// holds transport-specific settings for this endpoint, which override the
+// Target's.
 type Endpoint struct {
-	Target   Target
-	Metadata map[string]string
-	Handler  EndpointHandler
+	Target Target
+	// ConsumerGroup names the logical group this endpoint joins. When it is
+	// empty, the Runtime's DeploymentGroupKey applies. ConsumerGroupNone
+	// means no group, so every instance handles every message. Any other
+	// value names the group, and one handler in that group handles each
+	// message.
+	ConsumerGroup string
+	Metadata      map[string]string
+	Handler       EndpointHandler
 }
 
 // Subscriber pairs a KindTopic target with a handler that does not reply.
-// Metadata holds transport-specific settings for this subscriber, and
-// ConsumerGroupKey.
+// Metadata holds transport-specific settings for this subscriber, which
+// override the Target's.
 type Subscriber struct {
-	Target   Target
-	Metadata map[string]string
-	Handler  SubscriberHandler
+	Target Target
+	// ConsumerGroup names the logical group this subscriber joins. It has the
+	// same meaning as Endpoint.ConsumerGroup.
+	ConsumerGroup string
+	Metadata      map[string]string
+	Handler       SubscriberHandler
 }
 
 // Config carries configuration as string keys and values. The specification
@@ -123,14 +139,8 @@ const (
 	// Subscriber the Runtime serves.
 	DeploymentGroupKey = "deployment_group"
 
-	// ConsumerGroupKey names the logical group an Endpoint or Subscriber
-	// joins, in its Metadata. When it is unset or empty, the Runtime's
-	// deployment group applies. ConsumerGroupNone means no group, so every
-	// instance handles every message. Any other value names the group, and one
-	// handler in that group handles each message.
-	ConsumerGroupKey = "consumer_group"
-
-	// ConsumerGroupNone is the ConsumerGroupKey value that requests no group.
+	// ConsumerGroupNone is the Endpoint.ConsumerGroup and
+	// Subscriber.ConsumerGroup value that requests no group.
 	ConsumerGroupNone = "none"
 )
 
