@@ -1,5 +1,7 @@
 # service-mesh-go
 
+This version implements the Service Mesh API Specification v0.4.0.
+
 service-mesh-go is the Go contract for the
 [Service Mesh API Specification](https://github.com/Paymentbox-com/service-mesh-api).
 It is the module `github.com/Paymentbox-com/service-mesh-go`, with one package,
@@ -27,9 +29,10 @@ Requires Go 1.26 or newer. The module has no dependencies.
 - `Message.Payload` is a `[]byte`. `nil` and an empty slice are both an empty payload.
 - `Target.Equal` compares segments and kind and ignores metadata.
 - The handler signatures `mesh.EndpointHandler` and `mesh.SubscriberHandler`.
-- `mesh.Config` and the configuration keys the specification defines. `mesh.DeploymentGroupKey`
-  is runtime configuration. `mesh.ConsumerGroupKey`, with the value `mesh.ConsumerGroupNone`, is
-  `Endpoint` and `Subscriber` metadata.
+- `mesh.Config` and the configuration key the specification defines, `mesh.DeploymentGroupKey`,
+  which is runtime configuration.
+- The consumer group is the `ConsumerGroup` field of `mesh.Endpoint` and `mesh.Subscriber`.
+  `mesh.ConsumerGroupNone` is the value for no group.
 - The reserved metadata prefix `mesh.ReservedPrefix` (`Mesh-`).
 - The metadata keys the specification defines: `mesh.HandlerErrorKey`, `mesh.TimeoutKey`,
   `mesh.DeadlineKey`, `mesh.DeliveryAttemptKey`, and `mesh.MessageIDKey`.
