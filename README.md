@@ -30,6 +30,9 @@ Requires Go 1.26 or newer. The module has no dependencies.
 - `mesh.Config` and the configuration keys the specification defines. `mesh.DeploymentGroupKey`
   is runtime configuration. `mesh.ConsumerGroupKey`, with the value `mesh.ConsumerGroupNone`, is
   `Endpoint` and `Subscriber` metadata.
+- The reserved metadata prefix `mesh.ReservedPrefix` (`Mesh-`).
+- The metadata keys the specification defines: `mesh.HandlerErrorKey`, `mesh.TimeoutKey`,
+  `mesh.DeadlineKey`, `mesh.DeliveryAttemptKey`, and `mesh.MessageIDKey`.
 - The errors defined by the specification: `mesh.ErrKindMismatch`,
   `mesh.ErrInvalidTarget`, and `mesh.ErrNoDeploymentGroup`.
 - The `mesh.Client` and `mesh.Runtime` interfaces.
